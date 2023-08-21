@@ -1,0 +1,12 @@
+$timer: .5s;
+
+#btnCreate {
+    right: 80px;
+    transition: right $timer ease-in-out, bottom $timer ease-in-out
+}
+@media(max-width: 580px) {
+    #btnCreate {
+        top: 15%;
+        right: 0px;
+    }
+} 

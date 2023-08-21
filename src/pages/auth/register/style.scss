@@ -1,0 +1,108 @@
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.container_ {
+    height: 100vh;
+    width: 100%;
+    background: url('@/assets/img/RegisterPage.jpg') center no-repeat ;
+    background-size: cover;
+    user-select: none;
+    .content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        background-color: rgba(250, 250, 250, 0.555);
+        backdrop-filter: blur( 13.5px );
+        -webkit-backdrop-filter: blur( 13.5px );
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        h1 {
+            color: rgb(90, 90, 90);
+            margin-bottom: 20px;
+            font-weight: bolder;
+            font-size: 3em;
+        }
+        form {
+            width: 100%;
+            margin-top: 10%;
+            .form-group {
+                margin-bottom: 20px;
+                
+                .input-group {
+                    width: 100%;
+                    padding: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 5px;
+                    font-size: 16px;
+                }
+                .button-success {
+                    border: 2px solid #4CAF50;
+                }
+                .button-success + ion-icon {
+                    color: #4CAF50;
+                }
+                .message-text-warn {
+                    font-size: .8em;
+                    width: 100%;
+                    color: red;
+                }
+                ion-icon {
+                    position: absolute;
+                    margin-top: -6%;
+                    right: 7%;
+                }
+                
+            }
+            .form-check {
+                display: flex;
+                input {
+                    transform: scale(1.5);
+                    margin-right: 5px; 
+                }
+            }
+            .form-button {
+                text-align: center;
+                margin-top: 20px;
+            }
+        }
+        .link {
+            margin-top: 30px;
+            text-align: center;
+            a {
+                font-size: 1.1em;
+                color: rgb(90, 90, 90);
+                font-weight: bold;
+                transition: .2s ease-in; 
+            }
+            a:hover {
+                text-decoration: underline;
+
+            }
+        }
+        
+    }
+}
+
+
+@media (max-width: 768px) {
+    /* Estilos para dispositivos móveis */
+    .container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        .content {
+            width: 80%;
+        }
+    }
+}

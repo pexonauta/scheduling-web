@@ -1,0 +1,43 @@
+mounted() {
+        let inputEmail = document.querySelector('#email')
+        let inputPassword = document.querySelector('#password')
+        setTimeout(() => {
+            if(!this.formValidated.email) {
+                if(inputEmail.value.length == 0) {
+                    inputEmail.classList.remove('button-success')
+                    this.messageError.email = 'Campo Obrigatório'
+                    this.messageErrorValidate.email = true
+                }
+                else if(inputEmail.value.length < 10){
+                    inputEmail.classList.remove('button-success')
+                    this.messageError.email = 'E-mail Incorreto'
+                    this.messageErrorValidate.email = true
+                }
+                else {
+                    this.messageError.email = ""
+                    this.messageErrorValidate.email = false
+                    inputEmail.classList.add('button-success')
+                    this.formValidated.email = true
+                }
+            }
+            if(!this.formValidated.password) {
+                if(inputPassword.value.length == 0) {
+                    inputPassword.classList.remove('button-success')
+                    this.messageError.password = 'Campo Obrigatório'
+                    this.messageErrorValidate.password = true
+                }
+                else if(inputPassword.value.length < 8){
+                    inputPassword.classList.remove('button-success')
+                    this.messageError.password = 'A senha deve conter no mínimo 8 catacter'
+                    this.messageErrorValidate.password = true
+                }
+                else {
+                    this.messageError.password = ""
+                    this.messageErrorValidate.password = false
+                    inputPassword.classList.add('button-success')
+                    this.formValidated.password = true
+                }
+            }
+            
+        }, 2000)
+    },

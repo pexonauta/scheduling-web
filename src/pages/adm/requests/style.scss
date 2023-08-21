@@ -1,0 +1,29 @@
+
+
+
+
+
+.hidden {
+    display: none;
+}
+tbody{
+    background: transparent !important;
+}
+tbody > tr:nth-of-type(odd) > * {
+    background-color: #d7d8da; /* Cor de fundo mais clara */
+}
+  
+tbody > tr:nth-of-type(even) > * {
+    background-color: #e2e3e5 ; /* Cor de fundo mais escura */
+}
+tbody > tr.deny:nth-of-type(odd) > * {
+    background-color:rgba(196, 119, 119, 1) !important; /* Cor de fundo mais clara */
+}
+  
+tbody > tr.deny:nth-of-type(even) > * {
+    background-color: rgba(196, 119, 119, 0.5)  !important; /* Cor de fundo mais escura */
+}
+
+button {
+    transition: .3s ease-in-out;
+}

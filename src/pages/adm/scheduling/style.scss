@@ -1,0 +1,53 @@
+#search {
+    margin-left: 10px;
+}
+.search {
+    margin-top: 2%;
+}
+.container {
+    margin-top: 4%;
+    .pagination {
+        position: absolute;
+        left: 50%;
+        bottom: 10%;
+        transform: translate(-50%);
+    }
+    .nothing {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+        text-align: center;
+        p {
+            font-size: 1.3em;
+            a {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                ion-icon {
+                    font-size: 3em;
+                }
+            }
+    
+        }
+    }
+}
+
+.info {
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    color: #000000;
+    cursor: pointer;
+ 
+    transition: .3s ease-in-out;
+}
+.info:hover {
+    background-color: #000000;
+    color: #fff;
+    transform: scale(1.1);
+
+}
+
+
+.hidden {
+    display: none;
+}

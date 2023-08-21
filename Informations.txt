@@ -1,0 +1,18 @@
+// Project informations
+//Referece
+pexonauta.github.io/industria/
+// Create a file of VueJs
+vue create nome-do-projeto
+//install scss
+npm install sass sass-loader fibers --save-dev
+//Install vue router
+npm install vue-router@4
+//Importar scss detro de outrom scss
+@import 'colors.scss'
+// no vue quando for importar style scss - example
+<style src="./style.scss" lang="scss" scoped/>
+//Input date to searchs Rooms
+npm install @vuepic/vue-datepicker
+
+//Começando o back com js LocalStorage - 10/08/23
+//https://pexonauta.github.io/web-scheduling/
