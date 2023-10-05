@@ -201,10 +201,22 @@ export default {
                     input.classList.remove('button-success')
                 }
                 else {
-                    this.messageErrorValidate.email = false
-                    this.messageError.email = ""
-                    input.classList.add('button-success')
-                    this.formValidated.email = true
+                    const userEmails = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
+                    const adminEmails = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
+                    const adminExist = adminEmails.some(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase())
+                    const userExist = userEmails.some(user => user.email.toLowerCase() === this.formData.email.toLowerCase())
+                    if(userExist || adminExist) {
+                        input.classList.remove('button-success')
+                        this.formValidated.email = false
+                        this.messageErrorValidate.email = true
+                        this.messageError.email = "Email já cadastrado"
+                    }else {
+                        this.messageErrorValidate.email = false
+                        this.messageError.email = ""
+                        input.classList.add('button-success')
+                        this.formValidated.email = true
+                    }
+                    
                 }
             }
             if(value == 'password') {
@@ -319,9 +331,20 @@ export default {
             if(this.formValidated.name && this.formValidated.email && this.formValidated.password && this.formValidated.confirmPassword) {
                 const existingUsersJSON = localStorage.getItem('Web-Agendamento-users');
                 const existingUsers = existingUsersJSON ? JSON.parse(existingUsersJSON) : [];
+                const existingAdminsJSON = localStorage.getItem('Web-Agendamento-admins');
+                const existingAdmins = existingAdminsJSON ? JSON.parse(existingAdminsJSON) : [];
                 // Verifique se existem usuários
                 if (existingUsers.length > 0) {
-                    if(existingUsers.some(user => user.email === this.formData.email)) {
+                    if(existingUsers.some(user => user.email.toLowerCase() === this.formData.email.toLowerCase())) {
+                        this.alert.status = true
+                        this.alert.type = 'alert-warning'
+                        this.alert.message = 'Já existe esse email'
+                        let inputEmail = document.querySelector('#email')
+                        inputEmail.classList.remove('button-success')
+                        this.messageError.email = 'Email já cadastrado'
+                        this.formValidated.email = false
+                        this.messageErrorValidate.email = true
+                    }else if(existingAdmins.length > 0 && existingAdmins.some(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase())) {
                         this.alert.status = true
                         this.alert.type = 'alert-warning'
                         this.alert.message = 'Já existe esse email'
@@ -331,42 +354,33 @@ export default {
                         this.formValidated.email = false
                         this.messageErrorValidate.email = true
                     }else {
-                        
                         // Recupere o último usuário da lista
                         const lastUser = existingUsers[existingUsers.length - 1];
                         // Faça algo com o último usuário
-                        this.formData.id = Number(lastUser.id) + 1 
+                        this.formData.id = Number(lastUser.id) + 1
+                        this.formData.email =  this.formData.email.toLowerCase()
                         existingUsers.push(this.formData);
                         localStorage.setItem('Web-Agendamento-users', JSON.stringify(existingUsers));
-                        const auth = {
-                        auth: 'authenticated',
-                            user: {
-                                id: this.formData.id,
-                                name: this.formData.name,
-                                lastname: this.formData.lastname,
-                                email: this.formData.email,
-                                type: this.formData.type,
-                            }
-                        }
-                        localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-                        this.$router.push('/user/home')
+                        this.$router.push({path: '/logar', query: { success: 'newRegister'}})
                     }
                 } else {
-                    this.formData.id = 1
-                    existingUsers.push(this.formData);
-                    localStorage.setItem('Web-Agendamento-users', JSON.stringify(existingUsers));
-                    const auth = {
-                        auth: 'authenticated',
-                        user: {
-                            id: this.formData.id,
-                            name: this.formData.name,
-                            lastname: this.formData.lastname,
-                            email: this.formData.email,
-                            type: this.formData.type,
-                        }
+                    if(existingAdmins.length > 0 && existingAdmins.some(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase())) {
+                        this.alert.status = true
+                        this.alert.type = 'alert-warning'
+                        this.alert.message = 'Já existe esse email'
+                        let inputEmail = document.querySelector('#email')
+                        inputEmail.classList.remove('button-success')
+                        this.messageError.email = 'Email já cadastrado'
+                        this.formValidated.email = false
+                        this.messageErrorValidate.email = true
+                    }else {
+                        this.formData.id = 1
+                        this.formData.email =  this.formData.email.toLowerCase()
+                        existingUsers.push(this.formData);
+                        localStorage.setItem('Web-Agendamento-users', JSON.stringify(existingUsers));
+                        this.$router.push('/user/home')
                     }
-                    localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-                    this.$router.push('/user/home')
+                    
                 }
                 
                 // this.$router.push('/user/home')

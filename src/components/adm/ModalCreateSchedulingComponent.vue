@@ -12,21 +12,43 @@
                 {{ this.messageError }}
             </div>
             <form>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="status" 
+                    id="scheduling" value="1" @click="messageHidden" v-model="formData.status">
+                    <label class="form-check-label" for="scheduling">Agendar</label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="status" 
+                    id="request" value="2" @click="messageHidden" v-model="formData.status">
+                    <label class="form-check-label" for="inlineRadio2">Solicitação</label>
+                  </div>
                 <div class="mb-3">
-                    <label for="block" class="form-label">Bloco:</label>
-                    <input type="text" class="form-control" id="block" v-model="formData.block">
+                    <label for="block" class="form-label">Data de Agendamento:</label>
+                    <input type="date" @click="messageHidden" class="form-control" id="block" 
+                    v-model="formData.date" 
+                    :min="minDate">
                 </div>
                 <div class="mb-3">
                     <label for="room" class="form-label">Sala:</label>
-                    <input type="text" class="form-control" id="room" v-model="formData.room">
+                    <select class="form-select" @click="messageHidden" v-model="formData.room">
+                        <option selected>Escolha a sala</option>
+                        <option v-for="room in rooms" :value="room.id" :key="room.id">
+                            {{ room.block.toUpperCase() + room.room }} 
+                        </option>
+                    </select>    
                 </div>
                 <div class="mb-3">
                     <label for="user" class="form-label">Usuário:</label>
-                    <input type="text" class="form-control" id="user" v-model="formData.user">
+                    <select class="form-select" @click="messageHidden" v-model="formData.user"> 
+                        <option selected>Escolha o usuário</option>
+                        <option v-for="user in users" :value="user.id" :key="user.id">
+                            {{ user.name +' - '+ user.email }}
+                        </option>
+                    </select>    
                 </div>
                 <div class="mb-3">
-                    <label for="email" class="form-label">Tipo de evento:</label>
-                    <select class="form-select" v-model="formData.type">
+                    <label for="email" class="form-label">Tipo do Agendamento:</label>
+                    <select class="form-select" @click="messageHidden" v-model="formData.type" >
                         <option selected>Escolha a ocasião</option>
                         <option value="1">Aula</option>
                         <option value="2">Evento</option>
@@ -52,29 +74,80 @@
         messageShow: false,
         messageError: '',
         formData: {
-            block: '',
-            room: '',
-            user: '',
-            type: '',
+            date: '',
+            room: 'Escolha a sala',
+            user: 'Escolha o usuário',
+            type: 'Escolha a ocasião',
+            status: 1,
         },
+        minDate: '',
+        rooms: [],
+        users: [],
+
       };
     },
-    methods: {
-      closeModal() {
-        this.$emit('close-modal');
-      },
-      saveChanges() {
-        if(this.formData.block.length == 0 || this.formData.room.length == 0 || this.formData.user.length == 0 || this.formData.type.length == 0 ) {
-            this.messageShow = true
-            this.messageError = 'Todos os itens são obrigatórios'
+    mounted() {
+        const today = new Date();
+        today.setDate(today.getDate())
+        // Formate a data no formato "YYYY-MM-DD"
+        const formattedDate = today.toISOString().substr(0, 10);
+        this.formData.date = formattedDate;
+        this.minDate = formattedDate;
+        if(JSON.parse(localStorage.getItem('Web-Agendamento-users')).length > 0) {
+            const users =  JSON.parse(localStorage.getItem('Web-Agendamento-users'))
+            const usersFilter = users.filter(user => user.type === 1)
+            this.users = usersFilter
         }
-        else {
-            this.$emit('save-changes', this.formData);
+        if(JSON.parse(localStorage.getItem('Web-Agendamento-rooms')).length > 0) {
+            const rooms =  JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
+            this.rooms = rooms
         }
-        
-      },
+       
     },
-  };
+    methods: {
+        messageHidden() {
+            this.messageError = ''
+            this.messageShow = false
+        },
+        closeModal() {
+            this.$emit('close-modal');
+        },
+        saveChanges() {
+            if(this.formData.room === 'Escolha a sala' || this.formData.user === 'Escolha o usuário' || this.formData.type === 'Escolha a ocasião' ) {
+                this.messageShow = true
+                this.messageError = 'Todos os itens são obrigatórios'
+            }
+            else {
+                const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
+                const today = new Date();
+                let dm = '01-01'
+                const nextYear = new Date(today.getFullYear() + dm);
+                nextYear.setFullYear(today.getFullYear() + 1);
+
+                const formattedDate = today.toISOString().substr(0, 10);
+                const formattedNextYear = nextYear.toISOString().substr(0, 10);
+                if(this.formData.date >= formattedDate && this.formData.date < formattedNextYear) {
+                    if(schedulings.length > 0) {
+                        const requestFind = schedulings.findIndex(scheduling =>
+                        scheduling.date == this.formData.date &&
+                        scheduling.room === this.formData.room)
+                        if(requestFind === -1) {
+                            this.$emit('save-changes', this.formData);
+                        }else {
+                            this.messageShow = true
+                            this.messageError = 'Já tem outro agendamento neste dia!'
+                        }
+                    }else {
+                        this.$emit('save-changes', this.formData);
+                    }
+                }else {
+                    this.messageShow = true
+                    this.messageError = 'Data Inválida'
+                }
+            }
+        },
+    },
+};
 </script>
   
 <style lang="scss" scoped>

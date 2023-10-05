@@ -101,10 +101,18 @@ button {
         
     }
 }
-
+.btn-user {
+    margin-left: 5px !important;
+    background-color: #055daf !important;
+    color: #949494 !important;
+}
+.btn-user:hover {
+    transform: scale(1.1);
+    color: #fff !important;
+}
 .btn-adm {
     margin-left: 5px !important;
-    background-color: #000 !important;
+    background-color: #050505 !important;
     color: #5a5a5a !important;
     transition: .3s;
 }

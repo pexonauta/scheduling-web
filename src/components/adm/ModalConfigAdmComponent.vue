@@ -7,8 +7,11 @@
             <button @click="closeModal" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <FormAdminComponent v-if="formData" :buttonsD="disabledButtons"/>
-           <FormPassword v-if="!formData"/>
+            <div v-if="alert.status" :class="'alert ' + alert.type">
+                {{ alert.message }}
+            </div>
+            <FormAdminComponent v-if="formData" :buttonsD="disabledButtons" @save-changes="adminUpdate"/>
+           <FormPassword v-if="!formData" @save-changes="adminPass"/>
             <button v-if="buttonPassword" @click="eventAlterPassword" class="btn btn-info me-2">Alterar Senha</button>
             <button v-if="buttonAlter" @click="eventEdit" class="btn btn-primary ">Alterar Dados</button>
         </div>
@@ -44,6 +47,11 @@ export default {
             buttonPassword: true,
             disabledButtons: true,
             formData: true,
+            alert: {
+                status: false,
+                type: '',
+                message: '',
+            },
             formAdmin: {
                 name: '',
                 lastname: '',
@@ -94,7 +102,12 @@ export default {
 
         this.buttonSave = true;
         this.buttonBack = true;
-      }
+      },
+      adminUpdate() {
+        this.alert.status = true
+        this.alert.type = 'alert-success'
+        this.alert.message = 'Dados Atualizados!'
+      },
     },
 }
 </script>
@@ -111,10 +124,10 @@ max-width: 400px;
 
 .modal-content {
 border-radius: 10px;
-background-color: rgba(179, 179, 179, 0.6) !important;
+background-color: rgb(177, 177, 177) !important;
 backdrop-filter: blur(15px); 
 -webkit-backdrop-filter: blur(15px);
-box-shadow: 4px 2px 3px rgba(0, 0, 0, 0.1);
+box-shadow: 4px 2px 3px rgba(0, 0, 0, 0.048);
 }
 
 .modal-header {

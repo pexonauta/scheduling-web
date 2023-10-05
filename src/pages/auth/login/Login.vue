@@ -23,7 +23,9 @@
                 </div>
 
                 <div class="form-button">
-                    <button class="btn-auth" type="submit" name="logar" @click="authLogin" id="logar">Entrar</button>
+                    <button class="btn-adm me-5" type="submit" name="logar" @click="authAdmin" id="logar">Admin</button>
+                    <button class="btn-auth me-5" type="submit" name="logar" @click="authLogin" id="logar">Entrar</button>
+                    <button class="btn-auth btn-user" type="submit" name="logar" @click="authUser" id="logar">Usuário</button>
                 </div>
             </form>
             <div class="link">
@@ -59,6 +61,18 @@ export default {
                 email: false,
                 password: false,
             }
+        }
+    },
+    created() {
+        if(this.$route.query.success === 'newRegister') {
+            this.alert.status = true
+            this.alert.type = 'alert-success'
+            this.alert.message = 'Conta Registrada aguarde até 48 horas para o acesso'
+            setTimeout(() => {
+                this.$route.query.success == null
+                this.alert.status = false
+                this.alert.type = ''
+            }, 5000)
         }
     },
     mounted() {
@@ -183,15 +197,15 @@ export default {
                 const admins = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
                 const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
                 if(admins.length > 0 && users.length > 0) {
-                    if(admins.some(admin => admin.email === this.formData.email)) {
-                        if(admins.some(admin => admin.email === this.formData.email && admin.password === this.formData.password)) {
-                            const admin = admins.find(admin => admin.email === this.formData.email)
+                    if(admins.some(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase())) {
+                        if(admins.some(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase() && admin.password === this.formData.password)) {
+                            const admin = admins.find(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase())
                             const auth = {
                                 auth: 'authenticated',
                                 admin: {
                                     id: admin.id,
                                     name: admin.name,
-                                    latname: admin.lastname,
+                                    lastname: admin.lastname,
                                     email: admin.email,
                                     type: admin.type,
                                 }
@@ -205,20 +219,32 @@ export default {
                             this.formValidated.password = false
                         }
                     }else {
-                        if(users.some(user => user.email === this.formData.email)) {
-                            if(users.some(user => user.email === this.formData.email && user.password === this.formData.password)) {
-                                const user = users.find(user => user.email === this.formData.email)
-                                const auth = {
-                                    auth: 'authenticated',
-                                    user: {
-                                        id: user.id,
-                                        name: user.name,
-                                        email: user.email,
-                                        type: user.type,
+                        if(users.some(user => user.email.toLowerCase() === this.formData.email.toLowerCase())) {
+                            if(users.some(user => user.email.toLowerCase() === this.formData.email.toLowerCase() && user.password === this.formData.password)) {
+                                const user = users.find(user => user.email.toLowerCase() === this.formData.email.toLowerCase())
+                                if(user.type === 0 ||user.type === -1) {
+                                    if(user.type === 0) {
+                                        this.alert.status = true
+                                        this.alert.type = 'alert-warning'
+                                        this.alert.message = 'Usuário em análise, tente novamente mais tarde'
+                                    }else {
+                                        this.alert.status = true
+                                        this.alert.type = 'alert-danger'
+                                        this.alert.message = 'Usuário Negado!!'
                                     }
+                                } else {
+                                    const auth = {
+                                    auth: 'authenticated',
+                                        user: {
+                                            id: user.id,
+                                            name: user.name,
+                                            email: user.email,
+                                            type: user.type,
+                                        }
+                                    }
+                                    localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
+                                    this.$router.push('/user/home')
                                 }
-                                localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-                                this.$router.push('/user/home')
                             }else {
                                 this.alert.status = true
                                 this.alert.type = 'alert-danger'
@@ -232,9 +258,7 @@ export default {
                             this.alert.message = 'E-mail não existente'
                             this.formValidated.email = false
                         }
-                        
                     }
-                   
                 }
                 else {
                     this.alert.status = true
@@ -242,9 +266,57 @@ export default {
                     this.alert.message = 'E-mail não existente'
                     this.formValidated.email = false
                 }
-                
             }
             }, 100)
+        },
+        authAdmin(e) {
+            e.preventDefault()
+            const admins = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
+            if(admins.length > 0) {
+                const adminsT = admins.filter(admin => admin.type === 2)
+                const admin = adminsT[0]
+                const auth = {
+                    auth: 'authenticated',
+                    admin: {
+                        id: admin.id,
+                        name: admin.name,
+                        lastname: admin.lastname,
+                        email: admin.email,
+                        type: admin.type,
+                    }
+                }
+                localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
+                this.$router.push('/adm/')
+            }else {
+                this.alert.status = true
+                this.alert.type = 'alert-warning'
+                this.alert.message = 'Nenhum usuário encontrado'
+            }
+            
+        },
+        authUser(e) {
+            e.preventDefault()
+            const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
+            if(users.length > 0) {
+                const usersT = users.filter(user => user.type === 1)
+                const user = usersT[0]
+                const auth = {
+                    auth: 'authenticated',
+                        user: {
+                            id: user.id,
+                            name: user.name,
+                            email: user.email,
+                            type: user.type,
+                        }
+                    }
+                localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
+                this.$router.push('/user/home')
+            }else {
+                this.alert.status = true
+                this.alert.type = 'alert-warning'
+                this.alert.message = 'Nenhum usuário encontrado'
+            }
+            
         },
     }
 }

@@ -87,8 +87,8 @@
         else {
           const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
           const admins = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
-          const userIndex = users.findIndex(user => user.email === this.formData.email)
-          const adminIndex = admins.findIndex(admin => admin.email === this.formData.email)
+          const userIndex = users.findIndex(user => user.email.toLowerCase() === this.formData.email.toLowerCase())
+          const adminIndex = admins.findIndex(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase())
           if(userIndex === -1 && adminIndex === -1) {
             users.length > 0 ? this.formData.id  = Number(users[users.length - 1].id) + 1 : this.formData.id = 1
             this.formData.type.toLocaleLowerCase() === 'enable' ? this.formData.type = 1 :

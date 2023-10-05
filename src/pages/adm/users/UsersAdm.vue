@@ -1,11 +1,11 @@
 <template>
     <div class="content">
         <div class="search d-flex mt-3">
-            <form v-if="users.length > 0" action="#" class="w-100 d-flex" role="search">
+            <form action="#" class="w-100 d-flex" role="search">
                 <input class="form-control me-2" id="search" type="search" v-model="searchs.search" placeholder="Pesquise a Sala" aria-label="Search">
                 <select class="w-50 me-4 form-select" v-model="searchs.type">
                     <option value="all" selected>Todos</option>
-                    <option value="1">Disabilitados</option>
+                    <option value="1">Desabilitados</option>
                     <option value="2">Aceitos</option>
                 </select>
                 
@@ -15,7 +15,7 @@
             <ModalCreateUser v-if="modalCreate" @close-modal="closeModalCreate" @save-changes="createUser"/>
 
         </div>
-        <div v-if="alert.status" :class="'text-center alert ' + alert.type">
+        <div v-if="alert.status" :class="'mt-2 text-center alert ' + alert.type">
             {{ alert.message }}
         </div>
         <div class="container mt-5">
@@ -56,7 +56,7 @@
                     </tr>
                 </thead>
             </table>
-            <ModalEdit v-if="this.modalEdit" :item="user"  @close-modal="modalEdit = false" @save-changes="saveNewData" @disable-on="disableUser"/>
+            <ModalEdit v-if="this.modalEdit" :item="user"  @close-modal="modalEdit = false" @save-changes="saveNewData" @disable-on="disableUser" @enable-on="enableUser"/>
         </div>
     </div>
     <div v-if="users.length === 0" class="content">
@@ -183,7 +183,15 @@ export default {
                 if(type === '1') {
                     const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
                     const filteredUsers = users.filter(user => user.type === -1);
-                    this.users = filteredUsers;
+                    if(filteredUsers.length > 0) {
+                        this.users = filteredUsers;
+                    }else {
+                        this.alert.status = true
+                        this.alert.type = 'alert-warning'
+                        this.alert.message = 'Nenhum usuario encontrado'
+                        this.users = 'vazio'
+                    }
+                    
                 }
                 else if(type === '2') {
                     const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
@@ -260,8 +268,23 @@ export default {
             this.alert.type = 'alert-success'
             this.alert.message = 'Usuário Desabilitado'
             const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
-            const filteredUsers = users.filter(user => user.type === 1);
+            const filteredUsers = users.filter(user => user.type === 1 || user.type === -1);
             this.users = filteredUsers;
+            this.modalEdit = false
+            setTimeout(() => {
+                this.alert.status = false
+                this.alert.type = ''
+                this.alert.message = ''
+            }, 5000);
+        },  
+        enableUser() {
+            this.alert.status = true
+            this.alert.type = 'alert-success'
+            this.alert.message = 'Usuário Ativado, consegue entrar novamente.'
+            const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
+            const filteredUsers = users.filter(user => user.type === 1 || user.type === -1);
+            this.users = filteredUsers;
+            this.modalEdit = false
             setTimeout(() => {
                 this.alert.status = false
                 this.alert.type = ''
@@ -290,7 +313,7 @@ export default {
                 this.alert.type = ''
                 this.alert.message = ''
             }, 5000);
-        },  
+        },
             
             
     }

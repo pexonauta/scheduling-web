@@ -6,7 +6,7 @@
             <ul>
                 <li><button @click="openModal('profile')">Perfil</button></li>
                 <li><button @click="openModal('config')">Configurações</button></li>
-                <li class="logout" @click="eventLogout"><router-link to="/">Sair</router-link></li>
+                <li class="logout" @click="openModal('sair')"><button>Sair</button></li>
             </ul>
         </div>
     </div>
@@ -16,17 +16,32 @@
     <div class="system-modal" v-if="modals.config">
         <ModalSystemComponent title="Configurações" @close-profile-modal="closeSystemModal"/>
     </div>
+    <ModalLogout
+    v-if="modals.logout" 
+    title="Deslogar"
+    text="Tem certeza que deseja sair ?"
+    button="Enviar"
+    @close-Modal="modals.logout = false"
+    @save-change="eventLogout"
+    />
 </template>
 <script>
 import ModalProfileComponent from './ModalProfileComponent.vue'
 import ModalSystemComponent from './ModalSystemComponent.vue'
+import ModalLogout from './ModalInputComponent.vue';
 export default {
-    name: "ProfileComponent",
+    name: "ProfileComponent",    
+    components: { 
+        ModalProfileComponent,
+        ModalSystemComponent,
+        ModalLogout, 
+    },
     data() {
         return {
             modals: {
                 profile: false,
                 config: false,
+                logout: false,
             }
         };
     },
@@ -75,6 +90,9 @@ export default {
                     this.modals.config = true
                 }
             }
+            if (value == 'sair') {
+                this.modals.logout = true
+            }
         },
         closeProfileModal() {
             this.modals.profile = false; // Alterando o valor da variável para false
@@ -94,19 +112,14 @@ export default {
             }
         },
         eventLogout() {
-            if(confirm('Tem certeza que deseja sair ?')) {
-                const auth = {
-                    auth: 'undefined'
-                }
-                localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-                this.$router.push('/')
+            const auth = {
+                auth: 'undefined'
             }
+            localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
+            this.$router.push('/')
         },  
     },
-    components: { 
-        ModalProfileComponent,
-        ModalSystemComponent, 
-    }
+
 }
 </script>
 <style lang="scss" scoped>
@@ -151,12 +164,12 @@ export default {
             button:hover {                       
                 text-decoration: underline;
             }
-            .logout a{
+            .logout button{
                 color: rgb(136, 35, 35);
                 text-decoration: none;
                 transition: 0.2s ease-in-out;
             }
-            .logout a:hover{
+            .logout button:hover{
                 color: rgb(216, 31, 31);
             }
         } 

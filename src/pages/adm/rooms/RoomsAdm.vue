@@ -3,7 +3,7 @@
         <div class="search">
             <form action="#" class="d-flex" role="search">
                 <input class="form-control me-2" id="search" type="search" placeholder="Pesquise a Sala" aria-label="Search">
-                <input class="form-control w-25 me-4" type="date" aria-label="Data" :value="dateToday">
+                <input class="form-control w-25 me-4" type="date" aria-label="Data" :value="dateToday" :min="minDate">
                 
                 <button @click="validatedSearch" class="btn btn-primary me-2" type="submit">Search</button>
             </form>
@@ -16,7 +16,7 @@
             </div>
             <div class="row" v-if="schenduling">
                 <div class="col">
-                    <table class="table table-striped table-sm">
+                    <table  v-if="schedulings.length !== 0" class="table table-striped table-sm">
                         <thead class="table-primary text-center">
                             <tr>
                                 <th scope="col">ID</th>
@@ -27,26 +27,35 @@
                                 <th scope="col">Ações</th>
                             </tr>
                         </thead>
-                        <tbody class="text-center">
-                            <tr v-for="item in items" :key="item.id" :id="'key'+ item.id">
+                        <tbody  class="text-center">
+                            <tr v-for="scheduling in schedulings" :key="scheduling.id" :id="'key'+ scheduling.id">
                                 
-                                <td scope="row">{{ item.id }}</td>
-                                <td class="info" :id="'room' + item.id"  @click="openModal('room', item.id)">
-                                    {{ item.room }}
-                                    <ModalRoom v-if="modals.room[item.id]" :room="item" @close-modal="closeModal"/>
+                                <td scope="row">{{ scheduling.id }}</td>
+                                <td class="info" :id="'room' + scheduling.id"  @click="openModal('room', scheduling.id)">
+                                    {{ findRoom(scheduling.room) }}
+                                    <ModalRoom v-if="modals.room[scheduling.id]" :scheduling="scheduling.id" :room="scheduling.room" @close-modal="closeModal"/>
                                 </td>
-                                <td>{{ item.type }}</td>
-                                <td class="info" :id="'request' + item.id" @click="openModal('request', item.id)">
-                                    {{ item.requester }} 
-                                    <ModalRequester v-if="modals.request[item.id]" :requester="item" @close-modal="closeModal"/>
+                                <td>{{ scheduling.type == 1 ? 'Aula' : scheduling.type == 2 ? 'Evento' : 
+                                    scheduling.type == 3 ? 'Festa' : 'Curso ExtraCurricular' }}</td>
+                                <td class="info" :id="'request' + scheduling.id" @click="openModal('request', scheduling.id)">
+                                    {{ findUser(scheduling.user)  }} 
+                                    <ModalRequester v-if="modals.request[scheduling.id]" :scheduling="scheduling.id" :requester="scheduling.user" @close-modal="closeModal"/>
                                 </td>
-                                <td>{{ item.dateIn }} a {{ item.dateOut }}</td>
+                                <td>{{ scheduling.date }} a {{ scheduling.date }}</td>
                                 <td>
-                                    <button :id="'accept'+item.id" @click="event('accept', item.id)" class="btn btn-success me-2" >Aceitar</button>
-                                    <button :id="'deny'+item.id" @click="event('deny', item.id)" class="btn btn-danger" >Negar</button>
+                                    <button @click="event('accept', scheduling.id)" class="btn btn-success me-2" >Aceitar</button>
+                                    <button @click="event('deny', scheduling.id)" class="btn btn-danger" >Negar</button>
                                 </td>
                             </tr>
                         </tbody>
+                        
+                    </table>
+                    <table v-else class="table table-striped table-sm">
+                        <thead class="table-primary text-center">
+                            <div class="bg-warning p-3 fs-3">
+                                Nenhum agendamento encontrado
+                            </div>
+                        </thead>
                     </table>
                 </div>
             </div>
@@ -64,20 +73,19 @@ export default {
     data() {
         return {
             schenduling: true,
+            minDate: '',
             modals: {
                 room: {}, 
                 request: {},
             },
             room: {},
+            schedulings: [],
             adiditions: [
                 'Ar Condicionado',
                 'Projetor',
                 'Quadro'
             ],
-            items: [
-                {id: '1', room: 'A20', type: 'padrao', requester: 'David', dateIn: '03/05', dateOut: '03/05'},
-                {id: '2', room: 'salao', type: 'festa', requester: 'Gother', dateIn: '03/05', dateOut: '03/05'},
-            ],
+            
             
         }
     },
@@ -94,6 +102,21 @@ export default {
             return `${year}-${month}-${day}`;
         }
     },
+    mounted() { 
+        if(!localStorage.getItem('Web-Agendamento-schedulings')){
+            localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify([]))
+        }
+        const schedulings = localStorage.getItem('Web-Agendamento-schedulings')  ?
+        JSON.parse(localStorage.getItem('Web-Agendamento-schedulings')) : []
+
+        this.schedulings = schedulings.filter(scheduling => scheduling.status !== 1)
+        const today = new Date();
+        today.setDate(today.getDate())
+        // Formate a data no formato "YYYY-MM-DD"
+        const formattedDate = today.toISOString().substr(0, 10);
+
+        this.minDate = formattedDate;
+    },
     methods: {
         validatedSearch(event) {
             event.preventDefault()
@@ -108,16 +131,35 @@ export default {
             document.querySelector('#'+ type+ itemId).classList.add('info')
         },
         event(value, data) {
-            const item = document.querySelector('#key' + data)
             if(confirm('Tem Certeza ?')) {
                 if(value === 'accept') {
-                    item.classList.add('hidden')
+                    const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
+                    const schedulingIndex = schedulings.findIndex(scheduling => scheduling.id === data)
+                    const scheduling = schedulings.find(scheduling => scheduling.id === data)
+                    scheduling.status = 1
+                    schedulings[schedulingIndex] = { ...scheduling }
+                    this.schedulings = schedulings.filter(scheduling => scheduling.status === 0)
+                    localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(schedulings))
+
                 }
                 if(value === 'deny') {
-                    item.classList.add('hidden')
+                    const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
+                    
+                    this.schedulings = schedulings.filter(scheduling => scheduling.status === 0 && scheduling.id !== data)
+                    localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(schedulings.filter(scheduling => scheduling.id !== data)))
                 }
             }
             
+        },
+        findUser(data) {
+            const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
+            const user = users.find(user => user.id === data)
+            return user.name
+        },
+        findRoom(data) {
+            const rooms = JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
+            const room = rooms.find(room => room.id === data)
+            return room.block.toUpperCase()+room.room  
         },
 
         

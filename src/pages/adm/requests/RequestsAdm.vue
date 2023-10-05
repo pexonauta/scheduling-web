@@ -103,7 +103,6 @@ export default {
                 if(confirm('Tem certeza disso ?')) {
                     const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'));
                     const userIndex = users.findIndex(user => user.id === data.id && user.email === data.email);
-                    console.log(userIndex)
                     if (userIndex >= 0) {
                         this.user = users[userIndex]
                         this.user.type = -1

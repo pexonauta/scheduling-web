@@ -9,10 +9,12 @@
         <div class="container">
             <div class="row mt-2" v-if="cardShow">
                 <div class="col">
-                    <CardResouceComponent  @event-show="eventShow"  title="Administradores" subtitle="Mostrar todos os Administradores" qtd="5" type="showAdmin"/>
+                    <CardResouceComponent  @event-show="eventShow"  title="Administradores" 
+                    subtitle="Todos os Administradores" :qtd="qtdAdmins" type="showAdmin"/>
                 </div>
                 <div class="col">
-                    <CardResouceComponent  @event-show="eventShow"  title="Salas e Blocos" subtitle="Mostrar todas as salas e blocos" type="showRoomAndBLock" qtd="-1" />
+                    <CardResouceComponent  @event-show="eventShow"  title="Salas e Blocos" 
+                    subtitle="Mostrar Todas as Salas e Blocos" type="showRoomAndBLock" qtd="-1" />
                 </div>
             </div>
             <div class="row">
@@ -50,6 +52,7 @@ export default {
             modalCreate: false,
             adminSearch: {},
             roomSearch: {},
+            qtdAdmins: 0,
             alert: {
                 status: false,
                 type: '',
@@ -67,6 +70,8 @@ export default {
     },
     mounted() {
         this.alert.status = false
+        const admins = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
+        this.qtdAdmins = Number(admins.length)
     },
     methods: {
         validatedSearch(value) {

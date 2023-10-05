@@ -3,7 +3,7 @@
         <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-            <h5 class="modal-title">Editar Dados Administrador</h5>
+            <h5 class="modal-title">Editar Dados do Usuário</h5>
             <button type="button" class="btn-close" @click="closeModal"></button>
             </div>
             <div class="modal-body">
@@ -27,7 +27,8 @@
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">Fechar</button>
-            <button type="button" class="btn btn-danger" @click="disableUser">Desabilitar</button>
+            <button v-if="formData.type !== -1" type="button" class="btn btn-danger" @click="disableUser">Desabilitar</button>
+            <button v-if="formData.type === -1" type="button" class="btn btn-success" @click="enableUser">Ativar</button>
             <button type="button" class="btn btn-primary" @click="saveChanges">Salvar</button>
             </div>
         </div>
@@ -55,6 +56,7 @@
             name: '',
             lastname: '',
             email: '',
+            type: '',
         },
       };
     },
@@ -78,8 +80,8 @@
       saveChanges() {
         const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
         const admins = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
-        const userIndex = users.findIndex(user => user.email === this.formData.email)
-        const adminIndex = admins.findIndex(admin => admin.email === this.formData.email)
+        const userIndex = users.findIndex(user => user.email.toLowerCase() === this.formData.email.toLowerCase())
+        const adminIndex = admins.findIndex(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase())
         if(userIndex === -1 && adminIndex === -1) {
           const type = this.formData.type.toLocaleLowerCase() == 'default' ? 1 :
           this.formData.type.toLocaleLowerCase() == 'elevator' ? 2 : ''
@@ -88,14 +90,16 @@
           localStorage.setItem('Web-Agendamento-users', JSON.stringify(users));
           this.$emit('save-changes');
         } else {
-          this.$emit('email-existing')
+          this.alert.status = true
+          this.alert.type = 'alert-warning'
+          this.alert.message = 'E-mail já existente'
         }
       },
       disableUser() {
         if(confirm('Certeza que deseja desabilitar esse usuário ?')) {
           const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'));
-          const userIndex = users.findIndex(user => user.email === this.formData.email);
-          if (userIndex === -1 || userIndex === 0) {
+          const userIndex = users.findIndex(user => user.email.toLowerCase() === this.formData.email.toLowerCase() && user.id === this.formData.id);
+          if (userIndex !== -1) {
             this.formData.type = -1
             users[userIndex] = { ...this.formData };
             localStorage.setItem('Web-Agendamento-users', JSON.stringify(users));
@@ -103,7 +107,24 @@
           } else {
             this.alert.status = true
             this.alert.type = 'alert-danger'
-            this.alert.message = 'E-mail ja existente'
+            this.alert.message = 'Usuário não encontrado'
+          }
+        }
+      },
+      enableUser() {
+        if(confirm('Certeza que deseja desabilitar esse usuário ?')) {
+          const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'));
+          const userIndex = users.findIndex(user => user.email.toLowerCase() === this.formData.email.toLowerCase() && user.id === this.formData.id);
+          console.log(userIndex)
+          if (userIndex !== -1) {
+            this.formData.type = 1
+            users[userIndex] = { ...this.formData };
+            localStorage.setItem('Web-Agendamento-users', JSON.stringify(users));
+            this.$emit('enable-on');
+          } else {
+            this.alert.status = true
+            this.alert.type = 'alert-danger'
+            this.alert.message = 'Usuário não encontrado'
           }
         }
       },
