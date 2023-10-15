@@ -76,14 +76,16 @@ export default {
         }
     },
     mounted() {
-        if(!localStorage.getItem('Web-Agendamento-users')) {
+        if(!localStorage.getItem('Web-Agendamento-users') || 
+        JSON.parse(localStorage.getItem('Web-Agendamento-users')).length === 0) {
             const users = [
                 {id: 1,name: 'Govern',lastname: 'afternoon', email: 'user@gmail.com',password: '12345678', type: 1},
             ]
             
             localStorage.setItem('Web-Agendamento-users', JSON.stringify(users))
-        } 
-        if(!localStorage.getItem('Web-Agendamento-admins')) {
+        }
+        if(!localStorage.getItem('Web-Agendamento-admins')|| 
+        JSON.parse(localStorage.getItem('Web-Agendamento-admins')).length === 0) {
             const admins = [
                 {id: 1,name: 'Life',lastname: 'Next', email: 'lifeNext@gmail.com',password: '12345678', type: 1},
                 {id: 2,name: 'Ceo',lastname: 'bennings', email: 'benning@gmail.com',password: '12345678', type: 2},

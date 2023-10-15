@@ -48,11 +48,22 @@
                                 </td>
                                 <td>{{ scheduling.date }} a {{ scheduling.date }}</td>
                                 <td>
-                                    <button :id="'cancel'+scheduling.id" @click="event('cancel', scheduling.id)" class="btn btn-danger" >Revogar</button>
+                                    <button 
+                                    class="btn btn-danger" 
+                                    @click="modalInput.status = true,
+                                    modalInput.think = scheduling.id" 
+                                    >Revogar</button>
                                 </td>
                             </tr>
                         </tbody>
-                        
+                        <ModalInput
+                        v-if="modalInput.status" 
+                        title="Cancelar Agendamento"
+                        text="Tem certeza que deseja fazer isso ?"
+                        button="Enviar"
+                        @save-change="handleCancel"
+                        @close-modal="modalInput.status = false"
+                        />
                     </table>
                     <table v-else class="table table-striped table-sm">
                         <thead class="table-primary text-center">
@@ -73,6 +84,7 @@
 import ModalRoom from '@/components/adm/ModalRoomComponent.vue'
 import ModalRequester from '@/components/adm/ModalRequesterComponent.vue'
 import ModalCreate from '@/components/adm/ModalCreateSchedulingComponent.vue'
+import ModalInput from '@/components/users/ModalInputComponent.vue'
 export default {
     name: 'SchedulingAdmPage',
     data() {
@@ -80,6 +92,10 @@ export default {
             schenduling: true,
             modalCreate: false,
             minDate: '',
+            modalInput: {
+                status: false,
+                think: null,
+            },
             modals: {
                 room: {}, 
                 request: {},
@@ -97,6 +113,7 @@ export default {
         ModalRoom,
         ModalRequester,
         ModalCreate,
+        ModalInput,
     },
     computed: {
         dateToday() {
@@ -140,16 +157,14 @@ export default {
             console.log(type,itemId)
             document.querySelector('#'+ type + itemId).classList.add('info')
         },
-        event(value, data) {
-            if(confirm('Tem certeza que deseja cancelar o agendamento ?')) {
-                if(value === 'cancel') {
-                    const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
-                    
-                    this.schedulings = schedulings.filter(scheduling => scheduling.id !== data)
-                    localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(this.schedulings))
-                }
-            }
-            
+        handleCancel() {
+            const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
+
+            this.schedulings = schedulings.filter(scheduling => scheduling.id !== 
+            this.modalInput.think)
+            localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(this.schedulings))
+            this.modalInput.status = false
+            this.modalInput.think = null
         },
         eventMark() {
             this.modalCreate = true
@@ -181,7 +196,12 @@ export default {
         findRoom(data) {
             const rooms = JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
             const room = rooms.find(room => room.id === data)
-            return room.block.toUpperCase()+room.room  
+            return this.findBlock(room.block)+room.room  
+        },
+        findBlock(id) {
+            const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
+            const block = blocks.find(block => block.id === id)
+            return block.block.toLocaleUpperCase()
         },
     }
 }

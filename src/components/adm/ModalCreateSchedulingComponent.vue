@@ -33,7 +33,7 @@
                     <select class="form-select" @click="messageHidden" v-model="formData.room">
                         <option selected>Escolha a sala</option>
                         <option v-for="room in rooms" :value="room.id" :key="room.id">
-                            {{ room.block.toUpperCase() + room.room }} 
+                            {{ findBlock(room.block) + room.room }} 
                         </option>
                     </select>    
                 </div>
@@ -145,6 +145,11 @@
                     this.messageError = 'Data Inválida'
                 }
             }
+        },
+        findBlock(id) {
+            const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
+            const block = blocks.find(block => block.id === id)
+            return block.block.toLocaleUpperCase()
         },
     },
 };

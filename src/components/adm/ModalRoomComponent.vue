@@ -58,7 +58,7 @@
       console.log(this.scheduling)
       const rooms = JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
       const room = rooms.find(room => room.id === this.room)
-      this.formData.room = room.block.toUpperCase() + room.room
+      this.formData.room = this.findBlock(room.block) + room.room
       this.formData.capacity = room.capacity
       this.formData.type = room.type == 1 ? 'Aula' : room.type == 2 ? 'Evento' : 
         room.type == 3 ? 'Festa' : 'Curso ExtraCurricular'
@@ -66,6 +66,11 @@
     methods: {
       closeModal() {
         this.$emit('close-modal','room', this.scheduling);
+      },
+      findBlock(id) {
+        const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
+        const block = blocks.find(block => block.id === id)
+        return block.block.toLocaleUpperCase()
       },
     },
   };

@@ -18,8 +18,13 @@
                 <td>{{ admin.email }}</td>
                 <td>{{ admin.type === 1  ? 'Padrão' : 'Superior' }}</td>
                 <td>
-                    <button @click="eventHandle('edit', admin)" class="btn btn-primary me-2">Editar</button>
-                    <button @click="eventHandle('delete', admin.id)" class="btn btn-danger">Excluir</button>
+                    <button @click="handleEdit(admin)" class="btn btn-primary me-2">Editar</button>
+                    <button 
+                    class="btn btn-danger"
+                    @click="modalInput = true, 
+                    think = admin.id" 
+                    >
+                    Excluir</button>
                 </td>
             </tr>
         </tbody>
@@ -27,14 +32,30 @@
     <div v-if="!validatedAdmin" class="text-center w-100 alert alert-warning fs-2">
         Nenhum Adminstrador Registrado
     </div>
-    <ModalEdit v-if="modalEdit" @close-modal="modalEdit = false" @email-existing="emailExisting" @save-changes="editAdmin" :item="adminEdit"/>
+    <ModalEdit 
+    v-if="modalEdit" 
+    :item="adminEdit"
+    @close-modal="modalEdit = false" 
+    @email-existing="emailExisting" 
+    @save-changes="editAdmin" 
+    />
+    <ModalInput 
+    v-if="modalInput"
+    title="Delete"
+    text="Tem certeza que deseja executar está ação ?"
+    button="Enviar"
+    @save-change="handleDelete"
+    @close-modal="modalInput = false"
+    />
 </template>
 <script>
 import ModalEdit from './ModalEditAdminComponent.vue'
+import ModalInput from '../users/ModalInputComponent.vue'
 export default {
     name: 'TableAdminsComponent',
     components: {
         ModalEdit,
+        ModalInput,
     },
     props: {
         adminSearch: {
@@ -44,7 +65,9 @@ export default {
     },
     data() {
         return {
+            think: null,
             modalEdit: false,
+            modalInput: false,
             validatedAdmin: false,
             admins: [
                 {}
@@ -75,7 +98,7 @@ export default {
     },
     mounted() {
         console.log(this.adminSearch)
-        if(localStorage.getItem('Web-Agendamento-admins') !== []) {
+        if(localStorage.getItem('Web-Agendamento-admins') != []) {
             const adminsRegisters = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
             if(adminsRegisters.length > 0) {
                 this.validatedAdmin = true
@@ -94,34 +117,31 @@ export default {
                 }
                 localStorage.setItem('Web-Agendamento-admins', JSON.stringify(admin))
             }else {
-                console.log('home')
+                this.$router.push('/')
             }
         }
     },
     methods: {
-        eventHandle(value, id) {
-            if(value === 'edit') {
-                this.modalEdit = true
-                this.adminEdit = id
-            }
-            if(value === 'delete') {
-                if(confirm('Você tem certeza que deseja excluir este administrador ?')) {
-                    const admins = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
-                    const adminIndex = admins.findIndex(admin => admin.id === id)
-                    if(adminIndex !== -1) {
-                        admins.splice(adminIndex, 1);
-                        this.admins = admins
-                        localStorage.setItem('Web-Agendamento-admins', JSON.stringify(admins))
-                        this.$emit('admin-deleted')
-                        if(JSON.parse(localStorage.getItem('Web-Agendamento-admins')).length == 0) {
-                            this.validatedAdmin = false
-                        }
-                    }else {
-                        this.$emit('admin-no-see')
-                    }
-                   
+        handleEdit(data) {
+            this.modalEdit = true
+            this.adminEdit = data
+        },
+        handleDelete() {
+            const admins = JSON.parse(localStorage.getItem('Web-Agendamento-admins'))
+            const adminIndex = admins.findIndex(admin => admin.id === this.think)
+            if(adminIndex !== -1) {
+                admins.splice(adminIndex, 1);
+                this.admins = admins
+                localStorage.setItem('Web-Agendamento-admins', JSON.stringify(admins))
+                this.$emit('admin-deleted')
+                if(JSON.parse(localStorage.getItem('Web-Agendamento-admins')).length == 0) {
+                    this.validatedAdmin = false
                 }
+            }else {
+                this.$emit('admin-no-see')
             }
+            this.modalInput = false
+            this.think = null
         },
         editAdmin() {
             this.modalEdit = false

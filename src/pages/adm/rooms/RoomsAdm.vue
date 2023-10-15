@@ -43,12 +43,31 @@
                                 </td>
                                 <td>{{ scheduling.date }} a {{ scheduling.date }}</td>
                                 <td>
-                                    <button @click="event('accept', scheduling.id)" class="btn btn-success me-2" >Aceitar</button>
-                                    <button @click="event('deny', scheduling.id)" class="btn btn-danger" >Negar</button>
+                                    <button 
+                                    class="btn btn-success me-2" 
+                                    @click="modalInput.status = true, 
+                                    modalInput.handle = handleAccept,
+                                    modalInput.think = scheduling.id,
+                                    modalInput.title = 'Aceitar'" 
+                                    >Aceitar</button>
+                                    <button 
+                                    class="btn btn-danger"
+                                    @click="modalInput.status = true,
+                                    modalInput.handle = handleDeny,
+                                    modalInput.think = scheduling.id,
+                                    modalInput.title = 'Negar'"  
+                                    >Negar</button>
                                 </td>
                             </tr>
                         </tbody>
-                        
+                        <ModalInput
+                        v-if="modalInput.status"
+                        :title="modalInput.title"
+                        text="Tem certeza que deseja executar essa ação ?"
+                        button="Enviar"
+                        @save-change="modalInput.handle"
+                        @close-modal="modalInput.status = false"
+                        />
                     </table>
                     <table v-else class="table table-striped table-sm">
                         <thead class="table-primary text-center">
@@ -59,21 +78,25 @@
                     </table>
                 </div>
             </div>
-            <div class="pagination" v-if="schenduling">
-
-            </div>
         </div>
     </div>
 </template>
 <script>
 import ModalRoom from '@/components/adm/ModalRoomComponent.vue'
 import ModalRequester from '@/components/adm/ModalRequesterComponent.vue'
+import ModalInput from '@/components/users/ModalInputComponent.vue'
 export default {
     name: 'RoomsAdmPage',
     data() {
         return {
             schenduling: true,
             minDate: '',
+            modalInput: {
+                status: false,
+                handle: null,
+                think: null, 
+                title: '',
+            },
             modals: {
                 room: {}, 
                 request: {},
@@ -85,13 +108,12 @@ export default {
                 'Projetor',
                 'Quadro'
             ],
-            
-            
         }
     },
     components: {
         ModalRoom,
         ModalRequester,
+        ModalInput,
     },
     computed: {
         dateToday() {
@@ -130,26 +152,21 @@ export default {
             console.log(type,itemId)
             document.querySelector('#'+ type+ itemId).classList.add('info')
         },
-        event(value, data) {
-            if(confirm('Tem Certeza ?')) {
-                if(value === 'accept') {
-                    const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
-                    const schedulingIndex = schedulings.findIndex(scheduling => scheduling.id === data)
-                    const scheduling = schedulings.find(scheduling => scheduling.id === data)
-                    scheduling.status = 1
-                    schedulings[schedulingIndex] = { ...scheduling }
-                    this.schedulings = schedulings.filter(scheduling => scheduling.status === 0)
-                    localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(schedulings))
-
-                }
-                if(value === 'deny') {
-                    const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
-                    
-                    this.schedulings = schedulings.filter(scheduling => scheduling.status === 0 && scheduling.id !== data)
-                    localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(schedulings.filter(scheduling => scheduling.id !== data)))
-                }
-            }
-            
+        handleAccept() {
+            const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
+            const schedulingIndex = schedulings.findIndex(scheduling => scheduling.id === this.modalInput.think)
+            const scheduling = schedulings.find(scheduling => scheduling.id === this.modalInput.think)
+            scheduling.status = 1
+            schedulings[schedulingIndex] = { ...scheduling }
+            this.schedulings = schedulings.filter(scheduling => scheduling.status === 0)
+            localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(schedulings))
+            this.clearModalInput()
+        },
+        handleDeny() {
+            const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
+            this.schedulings = schedulings.filter(scheduling => scheduling.status === 0 && scheduling.id !== this.modalInput.think)
+            localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(schedulings.filter(scheduling => scheduling.id !== this.modalInput.think)))
+            this.clearModalInput()
         },
         findUser(data) {
             const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
@@ -159,7 +176,18 @@ export default {
         findRoom(data) {
             const rooms = JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
             const room = rooms.find(room => room.id === data)
-            return room.block.toUpperCase()+room.room  
+            return this.findBlock(room.block)+room.room  
+        },
+        findBlock(id) {
+            const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
+            const block = blocks.find(block => block.id === id)
+            return block.block.toLocaleUpperCase()
+        },
+        clearModalInput() {
+            this.modalInput.status = false
+            this.modalInput.handle = null
+            this.modalInput.think = null
+            this.modalInput.title = ''
         },
 
         

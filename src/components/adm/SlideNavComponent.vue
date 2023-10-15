@@ -24,24 +24,37 @@
                 <li :class="{active: isActiveRouter('/adm/management')}">
                     <RouteLink router="/adm/management" text="Feramentas" icon="construct-outline"/>
                 </li>
-                <li class="leave" @click="adminlogout">
-                    <a href="/">
+                <li class="leave" @click="modalLogout = true">
+                    <button>
                         <span class="icon"><ion-icon name="exit-outline"></ion-icon></span>
                         <span class="title"> Sair</span>
-                    </a>
+                    </button>
                 </li>
             </ul>
         </div>
         <div @click="closeNav" class="toggle" id="toggle" ref="toggle"></div>
     </div>
+    <ModalInput
+    v-if="modalLogout"
+    title="Deslogar"
+    text="Você tem certeza que deseja sair ?" 
+    button="Sair"
+    @close-Modal="modalLogout = false"
+    @save-change="adminlogout"
+    />
 </template>
 <script>
 import RouteLink from './RouteLinkComponent.vue'
+import ModalInput from '../users/ModalInputComponent.vue'
 export default {
     name: 'NavigationComponent',
     components: {
-        RouteLink
+        RouteLink,
+        ModalInput,
     },
+    data: () => ({
+        modalLogout: false,
+    }),
     mounted() {
         document.addEventListener('click', this.handleClickOutside);
     },
@@ -87,13 +100,11 @@ export default {
             }
         },
         adminlogout() {
-            if(confirm('Tem certeza que deseja sair ?')) {
-                const auth = {
-                    auth: 'undefined'
-                }
-                localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-                this.$router.push('/')
+            const auth = {
+                auth: 'undefined'
             }
+            localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
+            this.$router.push('/')
         }
     }
 }
@@ -207,6 +218,36 @@ export default {
                         transform: scale(1.2);
                     }
                 }
+                button{
+                    position: relative;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 5px 15px;
+                    
+                    background-color: #fff;
+                    border-radius: 50%;
+                    font-size: 1.2em;
+                    font-weight: bold;
+                    color: #000;
+                    border: none;
+                    transition: all .3s ease-in-out;
+                    .icon {
+                        margin-top: 8px;
+                        font-size: 1.5em;
+                        transition: .3s ease-in-out;
+                    }
+                    .title{
+                        display: none;
+                    }
+                }
+                button:hover {
+                    color: #fff;
+                    background-color: #000;
+                    .icon {
+                        transform: scale(1.2);
+                    }
+                }
             }
             li:last-child {
                 margin-bottom: 120%;
@@ -275,6 +316,19 @@ export default {
             left: 10px;
         }
     }
+    button {
+        width: 100%;
+        border-radius: 20px 0 0 20px !important;
+        .title{
+            display: block !important;
+            margin-left: 15px;
+        }
+        .icon {
+            margin-top: 8px !important;
+            position: absolute;
+            left: 10px;
+        }
+    }
     #toggle {
         left: 190px;
         &::before {
@@ -288,7 +342,7 @@ export default {
         }
     }
 }
-.leave a:hover {
+.leave button:hover {
     color: #8d1212 !important;
 }
 

@@ -38,8 +38,9 @@
                         <td>{{ user.email }}</td>
                         <td>{{ user.type }}</td>
                         <td>
-                            <button @click="event('edit', user)" class="btn btn-primary me-2" >Editar</button>
-                            <button @click="event('delete', user)" class="btn btn-danger" >Excluir</button>
+                            <button @click="handleEdit(user)" class="btn btn-primary me-2" >Editar</button>
+                            <button @click="modalInput.status = true, modalInput.think = user.id" 
+                            class="btn btn-danger" >Excluir</button>
                         </td>
                     </tr>
                 </tbody>
@@ -56,7 +57,21 @@
                     </tr>
                 </thead>
             </table>
-            <ModalEdit v-if="this.modalEdit" :item="user"  @close-modal="modalEdit = false" @save-changes="saveNewData" @disable-on="disableUser" @enable-on="enableUser"/>
+            <ModalEdit 
+            v-if="this.modalEdit" 
+            :item="user"  
+            @close-modal="modalEdit = false" 
+            @save-changes="saveNewData" 
+            @disable-on="disableUser" 
+            @enable-on="enableUser"/>
+            <ModalInput
+            v-if="modalInput.status" 
+            title="Deletar"
+            text="Tem certezam que deseja excluir este usuário ?"
+            button="Enviar"
+            @save-change="handleDelete"
+            @close-modal="modalInput.status = false"
+            />
         </div>
     </div>
     <div v-if="users.length === 0" class="content">
@@ -70,16 +85,22 @@
 <script>
 import ModalEdit from '@/components/adm/ModalEdit.vue'
 import ModalCreateUser from '@/components/adm/ModalCreateUserComponent.vue'
+import ModalInput from '@/components/users/ModalInputComponent.vue'
 export default {
     name: 'RequestsPage',
     components: {
         ModalEdit,
         ModalCreateUser,
+        ModalInput,
     },
     data() {
         return {
             modalCreate: false,
             modalEdit: false,
+            modalInput: {
+                status: false,
+                think: null,
+            },
             searchs: {
                 search: '',
                 type: 'all',
@@ -211,28 +232,23 @@ export default {
         closeModalCreate() {
             this.modalCreate = false
         },
-        event(value,data) {
-            if(value === 'edit') {
-                this.modalEdit = true
-                this.user = data
-            }
-            if(value === 'delete') {
-                if(confirm('Você tem certeza que deseja excluir este usuário ?')) {
-                    const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
-                    const user = users.find(user => user.email === data.email && user.id === data.id)
-                    if(user) {
-                        users.splice(user, 1)[0];
-                        this.users = users
-                        localStorage.setItem('Web-Agendamento-users', JSON.stringify(users))
-                        this.userDeleted()
-                        if(JSON.parse(localStorage.getItem('Web-Agendamento-users')).length == 0) {
-                            location.reload()
-                        }
-                    }else {
-                        this.userNoSee()
-                    }
-                   
+        handleEdit(data) {
+            this.modalEdit = true
+            this.user = data
+        },
+        handleDelete() {
+            const users = JSON.parse(localStorage.getItem('Web-Agendamento-users'))
+            const user = users.find(user => user.id === this.modalInput.think)
+            if(user) {
+                users.splice(user, 1)[0];
+                this.users = users
+                localStorage.setItem('Web-Agendamento-users', JSON.stringify(users))
+                this.userDeleted()
+                if(JSON.parse(localStorage.getItem('Web-Agendamento-users')).length == 0) {
+                    location.reload()
                 }
+            }else {
+                this.userNoSee()
             }
         },
         saveNewData() {

@@ -19,7 +19,7 @@
         <div class="col-auto">
             <select class="form-select" v-model="formRoom.block" >
                 <option selected>Blocos</option>
-                <option v-for="block in sortedBlocks" :key="block.id">{{ block.block.toUpperCase() }}</option>
+                <option v-for="block in sortedBlocks" :key="block.id" :value="block.id">{{ block.block.toUpperCase() }}</option>
             </select>
         </div>
         <div class="col-auto">
@@ -53,7 +53,12 @@
                 <td scope="row">{{ block.id }}</td>
                 <td> {{ block.block }} </td>
                 <td>
-                    <button @click="eventHandle('delete-block', block)" class="btn btn-danger">Excluir</button>
+                    <button 
+                    class="btn btn-danger"
+                    @click="modalInput.status = true, 
+                    modalInput.handle = handleDeleteBlock,
+                    modalInput.think = block.id" 
+                    >Excluir</button>
                 </td>
             </tr>
         </tbody>
@@ -73,12 +78,20 @@
             <tr v-for="room in rooms" :key="room.id">
                 <td scope="row"> {{ room.id }} </td>
                 <td>{{ room.room }}</td>
-                <td>{{ room.block }}</td>
+                <td>{{ findBlock(room.block) }}</td>
                 <td>{{ room.capacity }}</td>
                 <td>{{ room.type == 1 ? 'Aula' : room.type == 2 ? 'Festa' : ''}}</td>
                 <td>
-                    <button @click="eventHandle('edit-room', room)" class="btn btn-primary me-2">Editar</button>
-                    <button @click="eventHandle('delete-room', room.id)" class="btn btn-danger">Excluir</button>
+                    <button 
+                    class="btn btn-primary me-2"
+                    @click="handleEdit(room)"
+                    >Editar</button>
+                    <button 
+                    class="btn btn-danger"
+                    @click="modalInput.status = true, 
+                    modalInput.handle = handleDeleteRoom,
+                    modalInput.think = room.id" 
+                    >Excluir</button>
                 </td>
             </tr>
         </tbody>
@@ -88,14 +101,29 @@
             Nenhuma sala registrada
         </div>
     </table>
-    <ModalEdit v-if="modalEdit" @close-modal="modalEdit = false" @save-changes="edit" :item="roomEdit"/>
+    <ModalEdit 
+    v-if="modalEdit" 
+    :item="roomEdit"
+    @save-changes="edit" 
+    @close-modal="modalEdit = false" 
+    />
+    <ModalInput
+    v-if="modalInput.status" 
+    title="Deletar"
+    text="Tem certeza que deseja executar está ação ?"
+    button="Enviar"
+    @save-change="modalInput.handle"
+    @close-modal="modalInput.status = false"
+    />
 </template>
 <script>
 import ModalEdit from './ModalEditRoomComponent.vue'
+import ModalInput from '../users/ModalInputComponent.vue'
 export default {
     name: 'TableAdminsComponent',
     components: {
         ModalEdit,
+        ModalInput,
     },
     props: {
         roomSearch: {
@@ -107,6 +135,11 @@ export default {
         return {
             tableBlocks: false,
             modalEdit: false,
+            modalInput: {
+                status: false,
+                handle: null,
+                think: null,
+            },
             messages: {
                 value: false,
                 type: '',
@@ -185,39 +218,41 @@ export default {
                 this.rooms = rooms
             }
         },
-        eventHandle(event,value) {
-            if(event === 'edit-room') {
-                this.modalEdit = true
-                this.roomEdit = value
+        handleEdit(value) {
+            this.modalEdit = true
+            this.roomEdit = value
+        },
+        handleDeleteRoom() {
+            const rooms = JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
+            const roomIndex = rooms.findIndex(room => room.id === this.modalInput.think)
+            if(roomIndex !== -1) {
+                rooms.splice(roomIndex, 1);
+                this.rooms = rooms
+                this.handleDeleteAllScheduling(this.modalInput.think)
+                localStorage.setItem('Web-Agendamento-rooms', JSON.stringify(rooms))
+                this.message('success', 'Sala excluído com sucesso')
+            }else {
+                this.message('danger', 'Ocorreu um erro, Tente Novamente')
             }
-            if(event === 'delete-room') {
-                if(confirm('Você tem certeza que deseja excluir esta Sala ?')) {
-                    const rooms = JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
-                    const roomIndex = rooms.findIndex(room => room.id === value)
-                    if(roomIndex !== -1) {
-                        rooms.splice(roomIndex, 1);
-                        this.rooms = rooms
-                        localStorage.setItem('Web-Agendamento-rooms', JSON.stringify(rooms))
-                        this.message('success', 'Sala excluído com sucesso')
-                    }else {
-                        this.message('danger', 'Ocorreu um erro, Tente Novamente')
-                    } 
-                }
+            this.modalInput.status = false
+            this.modalInput.handle = null
+            this.modalInput.think = null  
+        },
+        handleDeleteBlock() {
+            const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
+            const blockIndex = blocks.findIndex(block => block.id === this.modalInput.think)
+            if(blockIndex !== -1) {
+                blocks.splice(blockIndex, 1);
+                this.blocks = blocks
+                this.handleDeleteAllRoom(this.modalInput.think)
+                localStorage.setItem('Web-Agendamento-blocks', JSON.stringify(blocks))
+                this.message('success', 'Bloco excluído com sucesso')
+            }else {
+                this.message('danger', 'Ocorreu um erro, Tente Novamente')
             }
-            if(event === 'delete-block') {
-                if(confirm('Você tem certeza que deseja excluir este bloco ?')) {
-                    const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
-                    const blockIndex = blocks.findIndex(block => block.id === value.id)
-                    if(blockIndex !== -1) {
-                        blocks.splice(blockIndex, 1);
-                        this.blocks = blocks
-                        localStorage.setItem('Web-Agendamento-blocks', JSON.stringify(blocks))
-                        this.message('success', 'Bloco excluído com sucesso')
-                    }else {
-                        this.message('danger', 'Ocorreu um erro, Tente Novamente')
-                    } 
-                }
-            }
+            this.modalInput.status = false
+            this.modalInput.handle = null
+            this.modalInput.think = null 
         },
         edit() {
             this.modalEdit = false
@@ -239,12 +274,12 @@ export default {
         createRoom(event) {
             event.preventDefault()
             if(this.formRoom.room.length == 0 || this.formRoom.block.length == 0 || 
-                this.formRoom.block.toLocaleLowerCase() == 'blocos' || this.formRoom.capacity.length == 0 || 
+                this.formRoom.block == 'blocos' || this.formRoom.capacity.length == 0 || 
                 this.formRoom.type.length == 0 || this.formRoom.type.toLocaleLowerCase() == 'tipos') {
                 this.message('danger','Todos os itens são obrigatórios')
             }else {
                 const rooms = JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
-                this.formBlock.block = this.formBlock.block.toLocaleUpperCase()
+                // this.formBlock.block = this.formBlock.block.toLocaleUpperCase()
                 
                 if(rooms.length > 0) {
                     const roomIndex = rooms.findIndex(room => room.room === this.formRoom.room && room.block === this.formRoom.block)
@@ -343,7 +378,24 @@ export default {
                 this.tableBlocks = false
             }
             
-        }
+        },
+        handleDeleteAllScheduling(id) {
+            const schedulings = JSON.parse(localStorage.getItem('Web-Agendamento-schedulings'))
+            const schedulingsFilter = schedulings.filter(scheduling => scheduling.room !== id)
+            localStorage.setItem('Web-Agendamento-schedulings', JSON.stringify(schedulingsFilter))
+        },
+        handleDeleteAllRoom(id) {
+            const rooms = JSON.parse(localStorage.getItem('Web-Agendamento-rooms'))
+            const roomsFilter = rooms.filter(room => room.block !== id)
+            const findIdScheduling = rooms.filter(room => room.block === id)[0]
+            this.handleDeleteAllScheduling(findIdScheduling.id)
+            localStorage.setItem('Web-Agendamento-rooms', JSON.stringify(roomsFilter))
+        },
+        findBlock(id) {
+            const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
+            const block = blocks.filter(block => block.id === id)[0]
+            return block.block.toLocaleUpperCase()
+        },
     }
 }
 </script>

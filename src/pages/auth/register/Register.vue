@@ -5,7 +5,7 @@
             <div v-if="alert.status" :class="'alert ' +alert.type">
                 {{ alert.message }}
             </div>
-            <form method="get" class="form" id="form">
+            <form class="form" id="form">
                 <div class="form-group">
                     <input class="input-group" @focusout="validatedForm('name')" name="name" id="name" type="text" placeholder="Nome:" required v-model="formData.name">
                     <ion-icon name="person-outline"></ion-icon>
@@ -92,7 +92,8 @@ export default {
         }
     },
     mounted() {
-        if(!localStorage.getItem('Web-Agendamento-users')) {
+        if(!localStorage.getItem('Web-Agendamento-users') || 
+        JSON.parse(localStorage.getItem('Web-Agendamento-users')).length === 0) {
             const users = [
                 {id: 1,name: 'Govern',lastname: 'afternoon', email: 'user@gmail.com',password: '12345678', type: 1},
             ]

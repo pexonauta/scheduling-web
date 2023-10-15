@@ -20,7 +20,7 @@
                 <div class="col" v-for="room in rooms" :key="room.id">
                     <CardRoomComponent
                     :id="room.id" 
-                    :title="room.block.toUpperCase() + room.room" 
+                    :title="findBlock(room.block) + room.room" 
                     :date="date"
                     :type="room.type"
                     :capacity="room.capacity" 
@@ -94,7 +94,12 @@ export default {
                 this.alert.type = ''
                 this.alert.message = ''
             }, 3000);
-        }
+        },
+        findBlock(id) {
+            const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
+            const block = blocks.find(block => block.id === id)
+            return block.block.toLocaleUpperCase()
+        },
     }
 }
 </script>

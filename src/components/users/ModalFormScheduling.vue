@@ -20,7 +20,7 @@
                 <div class="mb-3 row">
                     <label for="staticRoom" class="col-sm-2 col-form-label">Sala:</label>
                     <div class="col-sm-10">
-                        <input type="text" readonly class="form-control-plaintext" :value="room.block + room.room">
+                        <input type="text" readonly class="form-control-plaintext" :value="findBlock(room.block) + room.room">
                     </div>
                 </div>
                 <div class="mb-3 row">
@@ -153,6 +153,11 @@ export default {
         },
         closeModal() {
             this.$emit('close-modal')
+        },
+        findBlock(id) {
+            const blocks = JSON.parse(localStorage.getItem('Web-Agendamento-blocks'))
+            const block = blocks.find(block => block.id === id)
+            if(block){return block.block}
         },
     }
 }
