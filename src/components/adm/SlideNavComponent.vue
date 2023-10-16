@@ -6,23 +6,23 @@
         </div>
         <div class="nav-links">
             <ul>
-                <li :class="{active:  isActiveRouter('/adm') || isActiveRouter('/adm/')}">
-                    <RouteLink router="/adm/" text="Inicio" icon="home-outline"/>
+                <li :class="{active:  isActiveRouter('/scheduling-web/adm') || isActiveRouter('/scheduling-web/adm/')}">
+                    <RouteLink router="/scheduling-web/adm/" text="Inicio" icon="home-outline"/>
                 </li>
-                <li :class="{active: isActiveRouter('/adm/requests')}">
-                    <RouteLink router="/adm/requests" text="Pedidos de Entrada" icon="person-add-outline"/>
+                <li :class="{active: isActiveRouter('/scheduling-web/adm/requests')}">
+                    <RouteLink router="/scheduling-web/adm/requests" text="Pedidos de Entrada" icon="person-add-outline"/>
                 </li>
-                <li :class="{active: isActiveRouter('/adm/users')}">
-                    <RouteLink router="/adm/users" text="Usuários" icon="people-outline"/>
+                <li :class="{active: isActiveRouter('/scheduling-web/adm/users')}">
+                    <RouteLink router="/scheduling-web/adm/users" text="Usuários" icon="people-outline"/>
                 </li>
-                <li :class="{active: isActiveRouter('/adm/rooms')}">
-                    <RouteLink router="/adm/rooms" text="Salas Solicitação" icon="duplicate-outline"/>
+                <li :class="{active: isActiveRouter('/scheduling-web/adm/rooms')}">
+                    <RouteLink router="/scheduling-web/adm/rooms" text="Salas Solicitação" icon="duplicate-outline"/>
                 </li>
-                <li :class="{active: isActiveRouter('/adm/scheduling')}">
-                    <RouteLink router="/adm/scheduling" text="Agendadas" icon="calendar-number-outline"/>
+                <li :class="{active: isActiveRouter('/scheduling-web/adm/scheduling')}">
+                    <RouteLink router="/scheduling-web/adm/scheduling" text="Agendadas" icon="calendar-number-outline"/>
                 </li>
-                <li :class="{active: isActiveRouter('/adm/management')}">
-                    <RouteLink router="/adm/management" text="Feramentas" icon="construct-outline"/>
+                <li :class="{active: isActiveRouter('/scheduling-web/adm/management')}">
+                    <RouteLink router="/scheduling-web/adm/management" text="Feramentas" icon="construct-outline"/>
                 </li>
                 <li class="leave" @click="modalLogout = true">
                     <button>
@@ -104,7 +104,7 @@ export default {
                 auth: 'undefined'
             }
             localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-            this.$router.push('/')
+            this.$router.push('/scheduling-web/')
         }
     }
 }

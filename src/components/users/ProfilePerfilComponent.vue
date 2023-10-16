@@ -46,11 +46,9 @@ export default {
         };
     },
     mounted() {
-        if(JSON.parse(localStorage.getItem('Web-Agendamento-auth')).auth !== 'authenticated') {
-            this.$router.push('/')
-        }
-        if(JSON.parse(localStorage.getItem('Web-Agendamento-auth')).admin) {
-            this.$router.push('/adm/')
+        if(!localStorage.getItem('Web-Agendamento-auth') || 
+        JSON.parse(localStorage.getItem('Web-Agendamento-auth')).auth !== 'authenticated') {
+            this.$router.push('/scheduling-web/')
         }
         // Adicionar o event listener ao nível do documento (ou ao elemento que engloba toda a página)
         document.addEventListener('click', this.handleOutsideClick);
@@ -116,7 +114,7 @@ export default {
                 auth: 'undefined'
             }
             localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-            this.$router.push('/')
+            this.$router.push('/scheduling-web/')
         },  
     },
 

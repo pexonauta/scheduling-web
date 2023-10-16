@@ -9,7 +9,7 @@
                 <p>As os agendamentos é feito por periodo, as salas são 
                 compostas por 30 cadeiras cada, tem um salão que é reservado 
                 apenas final de semana, para ver as salas só clicar no botão abaixo.</p>
-                <router-link to="/user/rooms" class="button">
+                <router-link to="/scheduling-web/user/rooms" class="button">
                     Ver 
                     <ion-icon name="arrow-redo-outline"></ion-icon>
                 </router-link>

@@ -3,11 +3,11 @@
         <div class="navBar bg-bluer">
             <div class="title">
                 <h1>{{ 
-                    isTitleRouter('/adm/requests') ? 'Solicitação de Acesso' : 
-                    isTitleRouter('/adm/users') ? 'Usuários Cadastrados' :
-                    isTitleRouter('/adm/rooms') ? 'Pedidos de Agendamentos' : 
-                    isTitleRouter('/adm/scheduling') ? 'Salas Agendadas' : 
-                    isTitleRouter('/adm/management') ? 'Gerenciamento de Recursos' :'Área Administrativa'
+                    isTitleRouter('/scheduling-web/adm/requests') ? 'Solicitação de Acesso' : 
+                    isTitleRouter('/scheduling-web/adm/users') ? 'Usuários Cadastrados' :
+                    isTitleRouter('/scheduling-web/adm/rooms') ? 'Pedidos de Agendamentos' : 
+                    isTitleRouter('/scheduling-web/adm/scheduling') ? 'Salas Agendadas' : 
+                    isTitleRouter('/scheduling-web/adm/management') ? 'Gerenciamento de Recursos' :'Área Administrativa'
                     }}</h1>
             </div>
             <div class="config">
@@ -35,11 +35,10 @@ export default {
         ModalConfigAdm,
     },
     mounted() {
-        if(JSON.parse(localStorage.getItem('Web-Agendamento-auth')).auth !== 'authenticated') {
-            this.$router.push('/')
-        }
-        if(JSON.parse(localStorage.getItem('Web-Agendamento-auth')).user) {
-            this.$router.push('/user/home')
+        if(!localStorage.getItem('Web-Agendamento-auth') || 
+        JSON.parse(localStorage.getItem('Web-Agendamento-auth')).auth !== 'authenticated' ||
+        JSON.parse(localStorage.getItem('Web-Agendamento-auth')).user) {
+            this.$router.push('/scheduling-web/')
         }
     },
     methods: {

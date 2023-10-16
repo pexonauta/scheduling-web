@@ -27,29 +27,29 @@ import NotFoundAdm from './pages/adm/notFound/NotFoundAdm.vue'
 
 const routes = [
     // Guest NotFound
-    {path: '/:pathMatch(.*)', component: Login},
+    {path: '/scheduling-web/:pathMatch(.*)', component: Login},
     // Routes Users
-    {path: '/', component: Login},
-    {path: '/Register', component: Register},
-    {path: '/user/home', component: Main, children: [
+    {path: '/scheduling-web/', component: Login},
+    {path: '/scheduling-web/Register', component: Register},
+    {path: '/scheduling-web/user/home', component: Main, children: [
         {path: '', component: Home},
-        {path: '/user/rooms', component: Rooms},
-        {path: '/user/schenduling', component: Schenduling},
-        {path: '/user/about', component: About},
+        {path: '/scheduling-web/user/rooms', component: Rooms},
+        {path: '/scheduling-web/user/schenduling', component: Schenduling},
+        {path: '/scheduling-web/user/about', component: About},
     ]},
     // User NotFound
-    {path: '/user:pathMatch(.*)', component: NotFound},
+    {path: '/scheduling-web/user:pathMatch(.*)', component: NotFound},
     // Routes Admins
-    {path: '/adm', component: MainAdm, children: [
+    {path: '/scheduling-web/adm', component: MainAdm, children: [
         {path: '', component: HomeAdm},
-        {path: '/adm/requests', component: RequestAdm},
-        {path: '/adm/users', component: UsersAdm},
-        {path: '/adm/rooms', component: RoomsAdm}, 
-        {path: '/adm/scheduling', component:SchendulingAdm},
-        {path: '/adm/management', component: Management},
+        {path: '/scheduling-web/adm/requests', component: RequestAdm},
+        {path: '/scheduling-web/adm/users', component: UsersAdm},
+        {path: '/scheduling-web/adm/rooms', component: RoomsAdm}, 
+        {path: '/scheduling-web/adm/scheduling', component:SchendulingAdm},
+        {path: '/scheduling-web/adm/management', component: Management},
     ]},
     // Admin NotFound
-    {path: '/adm:pathMatch(.*)', component: NotFoundAdm},
+    {path: '/scheduling-web/adm:pathMatch(.*)', component: NotFoundAdm},
 ]
 
 const router = createRouter({

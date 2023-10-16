@@ -55,7 +55,7 @@ export default {
             this.user.email = user.email
             this.user.type = user.type
         }else {
-            this.$router.push('/')
+            this.$router.push('/scheduling-web/')
         }
     },
     unmounted() {

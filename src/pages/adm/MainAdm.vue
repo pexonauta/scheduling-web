@@ -12,11 +12,10 @@ export default {
         NavBarComponent,
     },
     mounted() {
-        if(JSON.parse(localStorage.getItem('Web-Agendamento-auth')).auth !== 'authenticated') {
-            this.$router.push('/')
-        }
-        if(JSON.parse(localStorage.getItem('Web-Agendamento-auth')).admin) {
-            this.$router.push('/adm/')
+        if(!localStorage.getItem('Web-Agendamento-auth') || 
+        JSON.parse(localStorage.getItem('Web-Agendamento-auth')).auth !== 'authenticated' ||
+        JSON.parse(localStorage.getItem('Web-Agendamento-auth')).user) {
+            this.$router.push('/scheduling-web/')
         }
     }
 }

@@ -3,23 +3,23 @@
         <div class="container">
             <div class="row mt-5">
                 <div class="col mt-2">
-                    <CardInfoComponent router="/adm/requests" title="Novos Registros" 
+                    <CardInfoComponent router="/scheduling-web/adm/requests" title="Novos Registros" 
                     subtitle="Solicitações de Acesso" :qtd="amounts.requests"/>
                 </div>
                 <div class="col mt-2">
-                    <CardInfoComponent router="/adm/users" title="Usuários" 
+                    <CardInfoComponent router="/scheduling-web/adm/users" title="Usuários" 
                     subtitle="Usuários Cadastrados" :qtd="amounts.users"/>
                 </div>
                 <div class="col mt-2">
-                    <CardInfoComponent router="/adm/rooms" title="Pedidos de Agendamentos" 
+                    <CardInfoComponent router="/scheduling-web/adm/rooms" title="Pedidos de Agendamentos" 
                     subtitle="Solicitações de Agendamento de sala" :qtd="amounts.rooms"/>
                 </div>
                 <div class="col mt-2">
-                    <CardInfoComponent router="/adm/scheduling" title="Agendados" 
+                    <CardInfoComponent router="/scheduling-web/adm/scheduling" title="Agendados" 
                     subtitle="Salas Agendadas " :qtd="amounts.schedulings"/>
                 </div>
                 <div class="col mt-2">
-                    <CardInfoComponent router="/adm/management" title="Administrativo" 
+                    <CardInfoComponent router="/scheduling-web/adm/management" title="Administrativo" 
                     subtitle="Algumas Opções Administrativas" qtd="-1"/>
                 </div>
             </div>
@@ -50,6 +50,11 @@ export default {
         this.amounts.schedulings = 0
     },
     mounted() {
+        if(!localStorage.getItem('Web-Agendamento-auth') || 
+        JSON.parse(localStorage.getItem('Web-Agendamento-auth')).auth !== 'authenticated' ||
+        JSON.parse(localStorage.getItem('Web-Agendamento-auth')).user) {
+            this.$router.push('/scheduling-web/')
+        }
         if(localStorage.getItem('Web-Agendamento-users') && localStorage.getItem('Web-Agendamento-schedulings')) {
             const users =  JSON.parse(localStorage.getItem('Web-Agendamento-users'))
             const qtdRequests = users.filter(user => user.type === 0)
@@ -106,6 +111,7 @@ export default {
                 {id: 8, room: 2, block: 3, capacity: 30, type: "2"}]
             localStorage.setItem('Web-Agendamento-rooms', JSON.stringify(rooms))
         }
+        
     }
 }
 </script>

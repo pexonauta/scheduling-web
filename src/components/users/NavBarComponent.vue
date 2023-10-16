@@ -11,10 +11,18 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-center" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <router-link class="nav-link" :class="{ active: isActiveRouter('/user/home')}" to="/user/home">Home</router-link>
-                        <router-link class="nav-link" :class="{active: isActiveRouter('/user/rooms')}" to="/user/rooms">Salas</router-link>
-                        <router-link class="nav-link" :class="{active: isActiveRouter('/user/schenduling')}" to="/user/schenduling">Agendamentos</router-link>
-                        <router-link class="nav-link" :class="{active: isActiveRouter('/user/about')}" to="/user/about">Sobre Nós</router-link>
+                        <router-link class="nav-link" 
+                        :class="{ active: isActiveRouter('/scheduling-web/user/home')}" 
+                        to="/scheduling-web/user/home">Home</router-link>
+                        <router-link class="nav-link" 
+                        :class="{active: isActiveRouter('/scheduling-web/user/rooms')}" 
+                        to="/scheduling-web/user/rooms">Salas</router-link>
+                        <router-link class="nav-link" 
+                        :class="{active: isActiveRouter('/scheduling-web/user/schenduling')}" 
+                        to="/scheduling-web/user/schenduling">Agendamentos</router-link>
+                        <router-link class="nav-link" 
+                        :class="{active: isActiveRouter('/scheduling-web/user/about')}" 
+                        to="/scheduling-web/user/about">Sobre Nós</router-link>
                     </div>
                 </div>
                 <div class="profile justify-content-end">

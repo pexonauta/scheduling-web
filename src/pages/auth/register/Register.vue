@@ -42,7 +42,7 @@
                 </div>
             </form>
             <div class="link">
-                <router-link to="/">Logar</router-link>
+                <router-link to="/scheduling-web/">Logar</router-link>
             </div>
         </div>
     </div>
@@ -362,7 +362,7 @@ export default {
                         this.formData.email =  this.formData.email.toLowerCase()
                         existingUsers.push(this.formData);
                         localStorage.setItem('Web-Agendamento-users', JSON.stringify(existingUsers));
-                        this.$router.push({path: '/logar', query: { success: 'newRegister'}})
+                        this.$router.push({path: '/scheduling-web/logar', query: { success: 'newRegister'}})
                     }
                 } else {
                     if(existingAdmins.length > 0 && existingAdmins.some(admin => admin.email.toLowerCase() === this.formData.email.toLowerCase())) {
@@ -379,7 +379,7 @@ export default {
                         this.formData.email =  this.formData.email.toLowerCase()
                         existingUsers.push(this.formData);
                         localStorage.setItem('Web-Agendamento-users', JSON.stringify(existingUsers));
-                        this.$router.push('/user/home')
+                        this.$router.push('/scheduling-web/user/home')
                     }
                     
                 }

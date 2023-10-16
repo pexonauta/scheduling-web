@@ -29,7 +29,7 @@
                 </div>
             </form>
             <div class="link">
-                <router-link to="/register">Registrar-se</router-link>
+                <router-link to="/scheduling-web/register">Registrar-se</router-link>
             </div>
         </div>
     </div>
@@ -92,8 +92,9 @@ export default {
             ]
             
             localStorage.setItem('Web-Agendamento-admins', JSON.stringify(admins))
-        } 
-        if(localStorage.getItem('Web-Agendamento-auth') === null ) {
+        }
+        if(localStorage.getItem('Web-Agendamento-auth') === null || 
+        !localStorage.getItem('Web-Agendamento-auth')) {
             const webAgendamentoAuth = {
                 auth: 'undefined',
             }
@@ -104,9 +105,9 @@ export default {
             const agendamentoAuth = JSON.parse(webAgendamentoJSON);
             if(agendamentoAuth.auth !== 'undefined') {
                 if(agendamentoAuth.admin) {
-                    this.$router.push('/adm/')
+                    this.$router.push('/scheduling-web/adm/')
                 }else {
-                    this.$router.push('/user/home')
+                    this.$router.push('/scheduling-web/user/home')
                 }
                 
             }else {
@@ -213,7 +214,7 @@ export default {
                                 }
                             }
                             localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-                            this.$router.push('/adm/')
+                            this.$router.push('/scheduling-web/adm/')
                         }else {
                             this.alert.status = true
                             this.alert.type = 'alert-danger'
@@ -288,7 +289,7 @@ export default {
                     }
                 }
                 localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-                this.$router.push('/adm/')
+                this.$router.push('/scheduling-web/adm/')
             }else {
                 this.alert.status = true
                 this.alert.type = 'alert-warning'
@@ -312,7 +313,7 @@ export default {
                         }
                     }
                 localStorage.setItem('Web-Agendamento-auth', JSON.stringify(auth))
-                this.$router.push('/user/home')
+                this.$router.push('/scheduling-web/user/home')
             }else {
                 this.alert.status = true
                 this.alert.type = 'alert-warning'
